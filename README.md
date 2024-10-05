@@ -1,4 +1,4 @@
-# Probability-Distribution
+# Probability Distribution and Random Variables
 # Project Overview
 This project explores the probabilities and distributions of four key random variables derived from rolling a fair die twice. It focuses on the relationships between the sum of the rolls, the maximum value, the absolute difference, and the product of these values. By generating sample spaces and calculating probability distributions for each variable, the project aims to provide a clear understanding of how these outcomes behave.
 
