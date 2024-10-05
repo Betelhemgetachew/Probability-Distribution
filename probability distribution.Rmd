@@ -1,0 +1,181 @@
+---
+title: "Probability"
+author: "Betelhem Getachew"
+date: "2024-03-22"
+output: html_document
+---
+
+# Calculating Probability
+```{r warning=FALSE, message=FALSE}
+library(dplyr)
+```
+
+
+A fair die is tossed twice. Let d1 = value of die on roll 1 and d2 = value of die on  roll 2. Let X = d1 +d2, the sum of the faces; Y = max{d1, d2}, the maximum of the two faces; and Z = |d1 − d2| and W =X × Z
+## Identifying the Sample Space for tossing a fair die twice
+
+The expand.grid() function in R is used to create a data frame that represents all possible combinations of the two rolls of the die,D1 and D2.
+
+```{r}
+possible_outcomes<-c(1,2,3,4,5,6)
+sample_space<-(sample_space <- expand.grid(d1 = possible_outcomes, d2 =possible_outcomes))
+sample_space
+
+```
+There are 36 possible combination values from rolling a die twice, where the second roll is independent of the first roll.
+
+## Generating the sample space for the values of X,Y,Z,W
+
+### Generating the sample space for the values of X
+
+The random variable "X" is defined as the sum of values of die on roll 1 and values of die on roll 2.So the value from the first roll of the die is added to the value of the second roll of the same die.For instance the die is rolled and the value observed is 5. When the die is rolled for the second time the value at the top of the die is 3.so, in this case x=5+3=8
+
+```{r}
+outputs_X <- sample_space$d1 + sample_space$d2
+outputs_X
+```
+So these are all the values we can get by adding D1 and D2. Therefore, These are the outcomes of "X ". These outputs comprises of repeated values. So to find the sample space, the unique function should be used.
+```{r}
+sample_space_X<-unique(outputs_X)
+sample_space_X
+```
+From the above result it can be concluded that  sample space of X has 11 unique values.
+
+### Generating the sample space for the values of Y
+The random variable 'Y' is defined as the maximum value of D1 and D2. The value obtained from the first roll is compared with the value obtained from the second roll. Then the maximum of the two values will be the output of "Y".
+```{r}
+outputs_Y<-pmax(sample_space$d1,sample_space$d2)
+outputs_Y
+
+```
+The above values are the outputs of "Y". For instance, in the first roll of the die,the value obtained was 1. In the second roll 6 is obtained. So since 6>1, 6 will be an output of "Y".These outputs comprises of repeated values. So to find the sample space, the unique function should be used.
+```{r}
+sample_space_Y<-unique(outputs_Y)
+sample_space_Y
+```
+The above values are the unique outputs of Y. So the sample space of Y comprises of 6 unique values.
+
+### Generating the sample space for the values of Z
+The random variable "Z" is defined as the absolute value of the difference of D1 and D2. The value obtained from the second roll will be subtracted from the value obtained in the first roll.Then the absolute value of the difference will be in the sample space of "Z". 
+
+
+```{r}
+outputs_Z <- abs(sample_space$d1 - sample_space$d2)
+outputs_Z
+```
+The above code results in displaying all the outputs of "Z".For example, if 4 and 5 are obtained from the first and the second roll respectively, Z will be |4-5| which is 1.These outputs comprises of repeated values. So to find the sample space, the unique function should be used.
+```{r}
+sample_space_Z<-unique(outputs_Z)
+sample_space_Z
+```
+From the above code, it can be seen that the sample space of Z has 6 values.
+
+### Generating the sample space for the values of W
+
+The random variable "W" is defined as the multiplication of "x" and "Z". So first the sum of the two values from the two rolls(X) is calculated. Then the absolute value of their difference(Z) is calculated. Finally the two results are multiplied. 
+
+```{r warning=FALSE}
+outputs_W <- outputs_X * outputs_Z
+outputs_W
+
+
+```
+The above output of the code shows the outputs of "W".For example , if 4 and 2 are obtained from the first and the second roll respectively, then x=6, z=2. so W= 6*2=12.These outputs comprises of repeated values. So to find the sample space, the unique function should be used.
+```{r}
+sample_space_W<-unique(outputs_W)
+sample_space_W
+```
+From the above result, it can be concluded that the sample space of W has 16 unique values.
+
+## Generate the probability distribution tables for X,Y,Z, and W
+
+### Generate the probability distribution tables for X
+Probability distribution table is used to calculate the proportion or probability of each unique value, by dividing the count of each value by the total number of observations.
+```{r}
+prob_table_X <- (table(outputs_X)) / nrow(sample_space)
+freq_table_X=data.frame(prob_table_X)
+prob_dist_X=freq_table_X%>%
+  mutate(X=as.numeric(as.character(outputs_X)))%>% 
+  mutate("p(x)"= Freq) %>% 
+  select(-outputs_X,-Freq)
+prob_dist_X  
+
+```
+
+A probability distribution for a random variable X is shown in the table. The matching number in the p(x) column indicates the chance that each row in the table corresponds to a particular value of X. With the help of the table, which summarizes the likelihoods for every conceivable value of X, we may determine the relative probabilities and draw conclusions about the behavior of the random variable.
+For instance, 2 appears once in the sample space of "X".So the frequency of 2 will be 1. The total sample space is 36. So the probability of 2 is 1/36, which is 0.02777.
+To check the validity of the probability distribution table, it is important to check that all values are non negative and the sum is 1.
+
+### Generate the probability distribution tables for Y
+```{r}
+prob_table_Y <- table(outputs_Y) / nrow(sample_space)
+freq_table_Y=data.frame(prob_table_Y)
+prob_dist_Y=freq_table_Y%>%
+  mutate(Y=as.numeric(as.character( outputs_Y))) %>% 
+  mutate("p(Y)"= Freq) %>% 
+  select(-outputs_Y,-Freq)
+prob_dist_Y
+```
+A probability distribution for the random variable Y is shown in the table. The matching value in the p(Y) column indicates the likelihood that each row in the table will correspond to a certain value of Y. The probability distribution of Y is skewed towards higher values, as the table demonstrates, and the probabilities increase as Y increases. This implies that, in comparison to lower values, higher values of Y are more likely to occur. All the probabilities of Y are non negative and their sum is 1.
+
+### Generate the probability distribution tables for Z
+```{r}
+prob_table_Z <- table(outputs_Z) / nrow(sample_space)
+freq_dist_Z=data.frame(prob_table_Z)
+prob_dist_Z=freq_dist_Z%>%
+  mutate(Z= as.numeric(as.character(outputs_Z))) %>% 
+  mutate("p(Z)"= Freq) %>% 
+  select(-outputs_Z,-Freq)
+prob_dist_Z
+```
+A probability distribution for the random variable Z is shown in the table. The matching value in the p(Z) column indicates the chance that each row in the table corresponds to a particular value of Z. Z = 1, which has the highest likelihood of about 0.2778, or 27.78%, is linked to it. In both directions, the probability rapidly drop as one gets away from Z = 1. The likelihood of Z = 0 is roughly 0.1667, or 16.67%, and the odds get smaller as Z increases. According to this probability distribution, Z = 1 and Z = 2 are the most likely outcomes, while the likelihood of other values falls with distance from the mode.
+probability distribution of Z also comprises of non negative  probabilities whose sum is 1.
+
+### Generate the probability distribution tables for W
+```{r}
+prob_table_W <- table(outputs_W) / nrow(sample_space)
+freq_dist_W=data.frame(prob_table_W)
+prob_dist_W=freq_dist_W%>%
+  mutate(W=as.numeric(as.character( outputs_W))) %>% 
+  mutate("p(W)"= Freq) %>% 
+  select(-outputs_W, -Freq)
+prob_dist_W
+```
+A probability distribution for the random variable W is shown in the table. The matching number in the p(W) column indicates the chance that each row in the table will correspond to a certain value of W. With the exception of 0, all values of W have the same probabilities, with a probability of around 0.0556, or 5.56%. This means that every value in W, with the exception of 0, has an equal chance of happening. The distribution of the probabilities associated with each value does not exhibit any discernible pattern or trend. With the exception of 0, every value of W has an equal likelihood of being observed, indicating that the random variable has a uniform probability distribution.
+Probability distribution of W comprises of 16 probabilities of the 16 W values which are all non negatives and their sum is 1.
+
+### Determine the following probabilitieS
+
+#### P(X ≤ 5)
+ P(X ≤ 5) means the sum of all the probabilities where x less or equal to 5.
+
+```{r}
+
+X_LE_5<-prob_dist_X %>% 
+  filter(X<=5)
+  
+prob_X_LE_5=sum(X_LE_5$`p(x)`)
+prob_X_LE_5
+```
+The above code calculates the cumulative probability of X being less than or equal to 5 by summing the probabilities 0f 2,3,4,and 5.So the probabilities of 2,3,4,and 5 from the probability distribution table are summed and the probability that X ≤ 5 is 27.78%.
+
+#### P(Y ≥ 3)
+P(Y ≥ 3) means the sum of all probabilities where y is greater or equal to 3.
+
+```{r}
+Y_GE_3<-prob_dist_Y %>% 
+  filter(Y>=3)
+prob_Y_GE_3<-sum(Y_GE_3$ `p(Y)`)
+prob_Y_GE_3
+```
+The above code calculates the cumulative probability of Y being greater or equal to 3 by summing the probabilities 0f 3,4,5,and 6. so the probability that X ≤ 5 is 88.89%.
+
+#### P(Z ≠ 0)
+P(Z ≠ 0) means the sum of all probabilities where Z is not zero.
+```{r}
+Z_notEq_0<-prob_dist_Z%>%
+  filter(Z!=0)
+prob_Z_notEq_0<-sum(Z_notEq_0$`p(Z)`)
+prob_Z_notEq_0
+```
+From the probability distribution table,to find the probability where z is not equal to 0, all the probabilities except where Z=0 will be summed.This means probabilities of 1,2,3,4,5 will be summed.
